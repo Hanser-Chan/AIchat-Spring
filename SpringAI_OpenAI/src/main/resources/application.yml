@@ -3,5 +3,5 @@ spring:
     name: springai_openai
   ai:
     openai:
-      api-key: hk-9ir4jc1000042679b60dd22ec96a20abeb1c5e4d01a1dda9
-      base-url: https://api.openai-hk.com
+      api-key: #??????api
+      base-url: https://api.openai-hk.com #?openai??
