@@ -1,0 +1,162 @@
+
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #333; /* 夜间模式背景色 */
+    color: #f8f9fa; /* 夜间模式文字颜色 */
+    font-family: Arial, sans-serif;
+}
+
+/* 整体布局 */
+.chat-container {
+    display: flex;
+    flex: 1;  /* 占据剩余空间 */
+    flex-direction: row;  /* 默认为行布局 */
+    overflow: hidden;  /* 防止内容溢出 */
+}
+
+/* 左侧区域 */
+.left-panel {
+    flex: 0 0 250px; /* 固定宽度 */
+    height: 100%; /* 高度填满 */
+    min-height: 500px; /* 最小高度，根据需要调整 */
+    background-color: #222;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* 保持顶部和底部内容分隔 */
+    overflow-y: auto; /* 添加滚动条以防内容溢出 */
+}
+/* 右侧聊天区域 */
+.right-panel {
+    flex: 1;
+    flex-grow: 3;  /* 右侧聊天区比左侧宽 */
+    background-color: #333; /* 夜间模式背景色 */
+    padding: 20px;
+    position: relative;
+}
+
+.title {
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.summary, .user-info {
+    background-color: #444;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px; /* 底部间隔 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+/* 聊天框 */
+.chat-box {
+    height: calc(100% - 70px); /* 减去输入框的高度 */
+    padding-bottom: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 默认左对齐 */
+}
+
+/* 消息气泡 */
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #2ecc71;
+    color: #333;
+    align-self: flex-end; /* 用户消息右对齐 */
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.bot-message {
+    background-color: #3498db;
+    color: #333;
+    align-self: flex-start; /* 模型消息左对齐 */
+    margin-left: 0;
+}
+
+.input-form {
+    display: flex;
+    align-items: center;
+    background-color: #444;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0; /* 确保表单填满底部 */
+}
+
+input[type="text"] {
+    flex: 1; /* 输入框占据剩余空间 */
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 3px;
+    background-color: #333;
+    color: #f8f9fa;
+    margin-right: 10px; /* 与发送按钮之间的间隔 */
+}
+
+input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-top: auto; /* 将用户信息区推到底部 */
+    margin-bottom: 20px; /* 与底部保持距离 */
+    background-color: #444;
+    color: #fff;
+    border-radius: 5px;
+}
+.user-info img {
+    width: 50px; /* 头像大小 */
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.user-info .username {
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .chat-container {
+        flex-direction: column;
+    }
+    .left-panel, .right-panel {
+        flex: 1 0 100%;
+    }
+}
+
+.spacer {
+    height: 10px; /* 调整此高度以增加底部空间 */
+    background-color: transparent; /* 保持透明不影响视觉 */
+}
+
