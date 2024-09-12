@@ -3,5 +3,5 @@ spring:
     name: springai_openai
   ai:
     openai:
-      api-key: #??????api
-      base-url: https://api.openai-hk.com #?openai??
+      api-key: #填充你自己的api
+      base-url: https://api.openai.com #这是openai的请求地址
