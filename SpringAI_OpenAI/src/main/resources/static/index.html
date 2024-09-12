@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/marked.min.js"></script>
+    <title>GGPT</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-color: #333; /* 夜间模式背景色 */
+            color: #f8f9fa; /* 夜间模式文字颜色 */
+            font-family: Arial, sans-serif;
+        }
+
+        /* 整体布局 */
+        .chat-container {
+            display: flex;
+            height: 100%;
+        }
+
+        /* 左侧区域 */
+        .left-panel {
+            flex: 0 0 20%; /* 占据大概20%宽度 */
+            background-color: #222; /* 深色背景 */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .title {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            background-color: #444; /* 深色背景，但比左侧面板浅 */
+            padding: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* 右侧聊天区域 */
+        .right-panel {
+            flex: 1;
+            background-color: #333; /* 夜间模式背景色 */
+            padding: 20px;
+            position: relative;
+        }
+
+        /* 聊天框 */
+        .chat-box {
+            height: calc(100% - 70px); /* 减去输入框的高度 */
+            padding-bottom: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 默认左对齐 */
+        }
+
+        /* 消息气泡 */
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: #2ecc71;
+            color: #333;
+            align-self: flex-end; /* 用户消息右对齐 */
+            margin-right: 0;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background-color: #3498db;
+            color: #333;
+            align-self: flex-start; /* 模型消息左对齐 */
+            margin-left: 0;
+        }
+
+        /* 输入框和发送按钮 */
+        .input-form {
+            display: flex;
+            align-items: center;
+            background-color: #444; /* 深色背景 */
+            padding: 10px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #555; /* 深色边框 */
+            border-radius: 3px;
+            background-color: #333; /* 夜间模式背景色 */
+            color: #f8f9fa; /* 夜间模式文字颜色 */
+        }
+
+        input[type="submit"] {
+            margin-left: 10px;
+            background-color: #2ecc71;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="left-panel">
+        <h1 class="title">GGpt</h1>
+        <div id="summary" class="summary"></div>
+    </div>
+    <div class="right-panel">
+        <div id="chat-box" class="chat-box"></div>
+        <form id="form" class="input-form">
+            <input type="text" id="message" name="message" placeholder="请输入您要提问的信息!">
+            <input type="submit" value="发送">
+            <div id="loader" class="loader" style="display: none;"></div>
+        </form>
+    </div>
+</div>
+<script>
+    var loader = document.getElementById("loader");
+
+    document.getElementById("form").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var messageInput = document.getElementById("message");
+        var message = messageInput.value;
+        messageInput.value = "";
+
+        var chatBox = document.getElementById("chat-box");
+
+        var userMessage = document.createElement("div");
+        userMessage.className = "message user-message";
+        userMessage.textContent = "您: " + message;
+        chatBox.appendChild(userMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        loader.style.display = "block";
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/ai/stream?message=" + encodeURIComponent(message), true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                loader.style.display = "none";
+
+                if (xhr.status === 200) {
+                    var response = xhr.responseText;
+
+                    var botMessage = document.createElement("div");
+                    botMessage.className = "message bot-message";
+
+                    var botMessageText = document.createElement("span");
+                    botMessageText.className = "message-text";
+                    botMessage.appendChild(botMessageText);
+                    botMessageText.innerHTML = marked.marked("本地AI: "+response);
+
+                    chatBox.appendChild(botMessage);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                } else if (xhr.status === 400) {
+                    var error = JSON.parse(xhr.responseText);
+
+                    var errorMessage = document.createElement("div");
+                    errorMessage.className = "message bot-message";
+                    errorMessage.textContent = "Bot: " + error.message;
+                    chatBox.appendChild(errorMessage);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                } else {
+                    var errorMessage = document.createElement("div");
+                    errorMessage.className = "message bot-message";
+                    errorMessage.textContent = "Bot: Failed to connect to the backend service. Please make sure the backend service is running.";
+                    chatBox.appendChild(errorMessage);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            }
+        };
+
+        xhr.onloadstart = function() {
+            loader.style.display = "block";
+        };
+
+        xhr.onloadend = function() {
+            loader.style.display = "none";
+        };
+
+        xhr.send();
+    });
+</script>
+</body>
+</html>
