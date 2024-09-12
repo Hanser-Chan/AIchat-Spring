@@ -2,7 +2,7 @@
 
 >以OpenAI为例，本项目配置中使用的是springboot自带的AI配置
 
-
+![demo.png](https://s2.loli.net/2024/09/12/Lq7GtkKsDjOmYid.png)
 
 ## 使用教程
 
